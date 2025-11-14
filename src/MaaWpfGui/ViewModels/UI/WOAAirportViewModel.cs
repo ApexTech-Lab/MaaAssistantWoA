@@ -182,15 +182,17 @@ namespace MaaWpfGui.ViewModels.UI
             StatusInfo = $"已连接。开始处理机场: {SelectedAirport}";
 
             // Create and append WOA task
-            var task = new AsstWOAAirportTask
+            var taskParams = new Newtonsoft.Json.Linq.JObject
             {
-                SelectedAirport = SelectedAirport,
-                EnableCrewAssignment = EnableCrewAssignment,
-                EnableSpecialOperations = EnableSpecialOperations,
+                ["airport"] = SelectedAirport,
+                ["enable_crew"] = EnableCrewAssignment,
+                ["enable_special"] = EnableSpecialOperations,
             };
 
-            var (type, taskParams) = task.Serialize();
-            bool ret = Instances.AsstProxy.AsstAppendTaskWithEncoding(AsstProxy.TaskType.WOAAirport, type, taskParams);
+            bool ret = Instances.AsstProxy.AsstAppendTaskWithEncoding(
+                AsstProxy.TaskType.WOAAirport,
+                Services.AsstTaskType.WOAAirport,
+                taskParams);
 
             if (!ret)
             {
@@ -283,28 +285,6 @@ namespace MaaWpfGui.ViewModels.UI
                     }
                     break;
             }
-        }
-    }
-
-    /// <summary>
-    /// WOA Airport task model for serialization.
-    /// </summary>
-    public class AsstWOAAirportTask
-    {
-        public string SelectedAirport { get; set; } = "BRI";
-        public bool EnableCrewAssignment { get; set; } = true;
-        public bool EnableSpecialOperations { get; set; } = true;
-
-        public (string, string) Serialize()
-        {
-            var parameters = new Newtonsoft.Json.Linq.JObject
-            {
-                ["airport"] = SelectedAirport,
-                ["enable_crew"] = EnableCrewAssignment,
-                ["enable_special"] = EnableSpecialOperations,
-            };
-
-            return ("WOAAirport", parameters.ToString(Newtonsoft.Json.Formatting.None));
         }
     }
 }

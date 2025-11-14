@@ -163,6 +163,11 @@ namespace MaaWpfGui.Services
         Reclamation,
 
         /// <summary>
+        /// World of Airports 自动化
+        /// </summary>
+        WOAAirport,
+
+        /// <summary>
         /// 自定义任务
         /// </summary>
         Custom,
