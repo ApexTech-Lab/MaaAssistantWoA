@@ -1,0 +1,559 @@
+{
+    "_comment": "World of Airports 自动化任务配置 - 基于原 Python 代码逻辑",
+    "_author": "Converted from Python game.py and app.py",
+    "_version": "1.0",
+
+    "WOA_Start": {
+        "Doc": "WOA 启动任务入口",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_FindAircraft"]
+    },
+
+    "WOA_FindAircraft": {
+        "Doc": "查找需要操作的飞机图标",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": "require_action.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_HandleAircraft"],
+        "on_error_next": ["WOA_CheckStartPage"],
+        "maxTimes": 999,
+        "postDelay": 500
+    },
+
+    "WOA_HandleAircraft": {
+        "Doc": "处理飞机 - 检查各种可能的按钮状态",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": [
+            "WOA_ClearToLand",
+            "WOA_Confirm",
+            "WOA_AssignStand",
+            "WOA_AssignCrew",
+            "WOA_Taxi",
+            "WOA_Pushback",
+            "WOA_CrossRunway",
+            "WOA_Lineup",
+            "WOA_Takeoff",
+            "WOA_ClaimReward"
+        ]
+    },
+
+    "WOA_ClearToLand": {
+        "Doc": "准许降落",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": ["clear_land.png", "land.png"],
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_FindAircraft"],
+        "on_error_next": ["#next"],
+        "postDelay": 500
+    },
+
+    "WOA_Confirm": {
+        "Doc": "确认按钮",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": "confirm.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_FindAircraft"],
+        "on_error_next": ["#next"],
+        "postDelay": 500
+    },
+
+    "WOA_AssignStand": {
+        "Doc": "分配机位 - 检测到 stand 按钮",
+        "algorithm": "MatchTemplate",
+        "template": "stand.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_SelectFirstStand"],
+        "on_error_next": ["#next"],
+        "postDelay": 500
+    },
+
+    "WOA_SelectFirstStand": {
+        "Doc": "选择第一个机位 - 点击固定位置",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [798, 1220, 100, 100],
+        "next": ["WOA_ConfirmStand"],
+        "postDelay": 500
+    },
+
+    "WOA_ConfirmStand": {
+        "Doc": "确认机位选择 - 再次点击 stand 按钮",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": "stand.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_WaitStandAssigned"],
+        "postDelay": 500
+    },
+
+    "WOA_WaitStandAssigned": {
+        "Doc": "等待机位分配完成",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_FindAircraft"],
+        "postDelay": 1000
+    },
+
+    "WOA_AssignCrew": {
+        "Doc": "分配地勤 - 需要特殊逻辑（OCR检查）",
+        "algorithm": "MatchTemplate",
+        "template": "crew.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_CheckCrewAvailability"],
+        "on_error_next": ["#next"],
+        "postDelay": 500
+    },
+
+    "WOA_CheckCrewAvailability": {
+        "Doc": "检查地勤可用性 - 使用自定义任务",
+        "algorithm": "CustomTask",
+        "taskName": "CheckAndAssignCrew",
+        "next": ["WOA_FindAircraft"],
+        "on_error_next": ["WOA_FindAircraft"],
+        "postDelay": 3000
+    },
+
+    "WOA_Taxi": {
+        "Doc": "滑行",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": "taxi.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_FindAircraft"],
+        "on_error_next": ["#next"],
+        "postDelay": 500
+    },
+
+    "WOA_Pushback": {
+        "Doc": "推出机位",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": "push.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_FindAircraft"],
+        "on_error_next": ["#next"],
+        "postDelay": 500
+    },
+
+    "WOA_CrossRunway": {
+        "Doc": "穿越跑道许可",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": "cross.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_FindAircraft"],
+        "on_error_next": ["#next"],
+        "postDelay": 500
+    },
+
+    "WOA_Lineup": {
+        "Doc": "对齐跑道",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": "lineup.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_FindAircraft"],
+        "on_error_next": ["#next"],
+        "postDelay": 500
+    },
+
+    "WOA_Takeoff": {
+        "Doc": "准许起飞",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": "takeoff.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_FindAircraft"],
+        "on_error_next": ["#next"],
+        "postDelay": 500
+    },
+
+    "WOA_ClaimReward": {
+        "Doc": "领取奖励",
+        "algorithm": "MatchTemplate",
+        "action": "Click",
+        "template": "claim.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_ConfirmClaim"],
+        "on_error_next": ["#next"],
+        "postDelay": 2000
+    },
+
+    "WOA_ConfirmClaim": {
+        "Doc": "确认领取奖励",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [1236, 909, 100, 100],
+        "next": ["WOA_FindAircraft"],
+        "postDelay": 5000
+    },
+
+    "WOA_CheckStartPage": {
+        "Doc": "检查是否在开始页面",
+        "algorithm": "MatchTemplate",
+        "template": "start.png",
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.8,
+        "next": ["WOA_ClickStartButton"],
+        "on_error_next": ["WOA_CheckHomePage"],
+        "postDelay": 1000
+    },
+
+    "WOA_ClickStartButton": {
+        "Doc": "点击开始按钮进入游戏",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [1294, 1347, 100, 100],
+        "next": ["WOA_WaitGameLoading"],
+        "postDelay": 2000
+    },
+
+    "WOA_WaitGameLoading": {
+        "Doc": "等待游戏加载",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_EnterAirport"],
+        "postDelay": 5000
+    },
+
+    "WOA_CheckHomePage": {
+        "Doc": "检查是否在主页",
+        "algorithm": "MatchTemplate",
+        "template": ["home.png", "home_bright.png"],
+        "roi": [0, 0, 2560, 1440],
+        "threshold": 0.7,
+        "next": ["WOA_ClickEnterFromHome"],
+        "on_error_next": ["WOA_FindAircraft"],
+        "postDelay": 1000
+    },
+
+    "WOA_ClickEnterFromHome": {
+        "Doc": "从主页进入游戏",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [2300, 400, 100, 100],
+        "next": ["WOA_WaitHomeLoading"],
+        "postDelay": 2000
+    },
+
+    "WOA_WaitHomeLoading": {
+        "Doc": "等待从主页进入后加载",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_FindAircraft"],
+        "postDelay": 60000
+    },
+
+    "WOA_EnterAirport": {
+        "Doc": "进入机场 - 将由自定义任务处理",
+        "algorithm": "CustomTask",
+        "taskName": "EnterSelectedAirport",
+        "next": ["WOA_FindAircraft"]
+    },
+
+    "WOA_ChangeAirport": {
+        "Doc": "切换机场 - 将由自定义任务处理",
+        "algorithm": "CustomTask",
+        "taskName": "ChangeToAirport",
+        "next": ["WOA_FindAircraft"]
+    },
+
+    "WOA_EnterAirportList": {
+        "Doc": "打开机场列表",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [1331, 768, 100, 100],
+        "next": ["WOA_WaitAirportList"],
+        "postDelay": 2000
+    },
+
+    "WOA_WaitAirportList": {
+        "Doc": "等待机场列表打开",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["#next"],
+        "postDelay": 1000
+    },
+
+    "WOA_SelectAirport_BRI": {
+        "Doc": "选择 BRI 机场",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_ScrollDown_BRI_1"]
+    },
+
+    "WOA_ScrollDown_BRI_1": {
+        "Doc": "BRI - 第一次向下滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 120, 50, 50],
+        "rectMove": [2263, 1200, 50, 50],
+        "specialParams": [2000, 0, 1, 1],
+        "next": ["WOA_ScrollDown_BRI_2"],
+        "postDelay": 2000
+    },
+
+    "WOA_ScrollDown_BRI_2": {
+        "Doc": "BRI - 第二次向下滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 120, 50, 50],
+        "rectMove": [2263, 1200, 50, 50],
+        "specialParams": [1000, 0, 1, 1],
+        "next": ["WOA_ClickAirport_BRI"],
+        "postDelay": 2000
+    },
+
+    "WOA_ClickAirport_BRI": {
+        "Doc": "点击 BRI 机场图标",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [2253, 306, 100, 100],
+        "next": ["WOA_ConfirmEnterAirport"],
+        "postDelay": 2000
+    },
+
+    "WOA_SelectAirport_PRG": {
+        "Doc": "选择 PRG 机场",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_ScrollDown_PRG_1"]
+    },
+
+    "WOA_ScrollDown_PRG_1": {
+        "Doc": "PRG - 第一次向下滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 120, 50, 50],
+        "rectMove": [2263, 1200, 50, 50],
+        "specialParams": [2000, 0, 1, 1],
+        "next": ["WOA_ScrollDown_PRG_2"],
+        "postDelay": 2000
+    },
+
+    "WOA_ScrollDown_PRG_2": {
+        "Doc": "PRG - 第二次向下滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 120, 50, 50],
+        "rectMove": [2263, 1200, 50, 50],
+        "specialParams": [1000, 0, 1, 1],
+        "next": ["WOA_ClickAirport_PRG"],
+        "postDelay": 2000
+    },
+
+    "WOA_ClickAirport_PRG": {
+        "Doc": "点击 PRG 机场图标",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [2253, 504, 100, 100],
+        "next": ["WOA_ConfirmEnterAirport"],
+        "postDelay": 2000
+    },
+
+    "WOA_SelectAirport_BKK": {
+        "Doc": "选择 BKK 机场",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_ScrollUp_BKK_1"]
+    },
+
+    "WOA_ScrollUp_BKK_1": {
+        "Doc": "BKK - 第一次向上滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 1200, 50, 50],
+        "rectMove": [2263, 120, 50, 50],
+        "specialParams": [1000, 0, 1, 1],
+        "next": ["WOA_ScrollUp_BKK_2"],
+        "postDelay": 2000
+    },
+
+    "WOA_ScrollUp_BKK_2": {
+        "Doc": "BKK - 第二次向上滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 1200, 50, 50],
+        "rectMove": [2263, 120, 50, 50],
+        "specialParams": [1000, 0, 1, 1],
+        "next": ["WOA_ScrollUp_BKK_3"],
+        "postDelay": 2000
+    },
+
+    "WOA_ScrollUp_BKK_3": {
+        "Doc": "BKK - 第三次向上滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 1200, 50, 50],
+        "rectMove": [2263, 120, 50, 50],
+        "specialParams": [1000, 0, 1, 1],
+        "next": ["WOA_ClickAirport_BKK"],
+        "postDelay": 2000
+    },
+
+    "WOA_ClickAirport_BKK": {
+        "Doc": "点击 BKK 机场图标",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [2277, 544, 100, 100],
+        "next": ["WOA_ConfirmEnterAirport"],
+        "postDelay": 2000
+    },
+
+    "WOA_SelectAirport_MSY": {
+        "Doc": "选择 MSY 机场",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_ScrollUp_MSY_1"]
+    },
+
+    "WOA_ScrollUp_MSY_1": {
+        "Doc": "MSY - 第一次向上滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 1200, 50, 50],
+        "rectMove": [2263, 120, 50, 50],
+        "specialParams": [1000, 0, 1, 1],
+        "next": ["WOA_ScrollUp_MSY_2"],
+        "postDelay": 2000
+    },
+
+    "WOA_ScrollUp_MSY_2": {
+        "Doc": "MSY - 第二次向上滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 1200, 50, 50],
+        "rectMove": [2263, 120, 50, 50],
+        "specialParams": [1000, 0, 1, 1],
+        "next": ["WOA_ScrollUp_MSY_3"],
+        "postDelay": 2000
+    },
+
+    "WOA_ScrollUp_MSY_3": {
+        "Doc": "MSY - 第三次向上滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 1200, 50, 50],
+        "rectMove": [2263, 120, 50, 50],
+        "specialParams": [1000, 0, 1, 1],
+        "next": ["WOA_ClickAirport_MSY"],
+        "postDelay": 2000
+    },
+
+    "WOA_ClickAirport_MSY": {
+        "Doc": "点击 MSY 机场图标",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [2277, 744, 100, 100],
+        "next": ["WOA_ConfirmEnterAirport"],
+        "postDelay": 2000
+    },
+
+    "WOA_SelectAirport_IAD": {
+        "Doc": "选择 IAD 机场",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_ScrollDown_IAD_1"]
+    },
+
+    "WOA_ScrollDown_IAD_1": {
+        "Doc": "IAD - 第一次向下滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 120, 50, 50],
+        "rectMove": [2263, 1200, 50, 50],
+        "specialParams": [2000, 0, 1, 1],
+        "next": ["WOA_ScrollDown_IAD_2"],
+        "postDelay": 2000
+    },
+
+    "WOA_ScrollDown_IAD_2": {
+        "Doc": "IAD - 第二次向下滑动",
+        "algorithm": "JustReturn",
+        "action": "Swipe",
+        "specificRect": [2263, 120, 50, 50],
+        "rectMove": [2263, 1200, 50, 50],
+        "specialParams": [1000, 0, 1, 1],
+        "next": ["WOA_ClickAirport_IAD"],
+        "postDelay": 2000
+    },
+
+    "WOA_ClickAirport_IAD": {
+        "Doc": "点击 IAD 机场图标",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [2253, 702, 100, 100],
+        "next": ["WOA_ConfirmEnterAirport"],
+        "postDelay": 2000
+    },
+
+    "WOA_ConfirmEnterAirport": {
+        "Doc": "确认进入机场",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [330, 1308, 100, 100],
+        "next": ["WOA_WaitAirportLoading"],
+        "postDelay": 10000
+    },
+
+    "WOA_WaitAirportLoading": {
+        "Doc": "等待机场加载完成",
+        "algorithm": "JustReturn",
+        "action": "DoNothing",
+        "next": ["WOA_ChangeVision_1"],
+        "postDelay": 2000
+    },
+
+    "WOA_ChangeVision_1": {
+        "Doc": "调整视角 - 第1次点击",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [2467, 72, 100, 100],
+        "next": ["WOA_ChangeVision_2"],
+        "postDelay": 2000
+    },
+
+    "WOA_ChangeVision_2": {
+        "Doc": "调整视角 - 第2次点击",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [2467, 723, 100, 100],
+        "next": ["WOA_ChangeVision_3"],
+        "postDelay": 2000
+    },
+
+    "WOA_ChangeVision_3": {
+        "Doc": "调整视角 - 第3次点击",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [2467, 72, 100, 100],
+        "next": ["WOA_ChangeVision_4"],
+        "postDelay": 2000
+    },
+
+    "WOA_ChangeVision_4": {
+        "Doc": "调整视角 - 第4次点击",
+        "algorithm": "JustReturn",
+        "action": "Click",
+        "specificRect": [1858, 75, 100, 100],
+        "next": ["WOA_FindAircraft"],
+        "postDelay": 2000
+    }
+}

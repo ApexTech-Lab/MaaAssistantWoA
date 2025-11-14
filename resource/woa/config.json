@@ -1,0 +1,99 @@
+{
+    "version": "1.0",
+    "name": "World of Airports",
+    "options": {
+        "taskDelay": 500,
+        "taskDelay_Doc": "识别延迟（毫秒）",
+        "controlDelayRange": [100, 300],
+        "controlDelayRange_Doc": "点击随机延迟范围 [最小, 最大]（毫秒），模拟人类操作",
+        "adbExtraSwipeDist": 100,
+        "adbExtraSwipeDuration": 500,
+        "adbSwipeDurationMultiplier": 10.0,
+        "adbSwipeXDistanceMultiplier": 0.8,
+        "minitouchSwipeDefaultDuration": 200,
+        "minitouchExtraSwipeDist": 100,
+        "minitouchExtraSwipeDuration": 200,
+        "debug": {
+            "saveScreenshot": true,
+            "screenshotPath": "debug/woa/screenshots/",
+            "cleanFilesFreq": 50,
+            "maxDebugFileNum": 100
+        }
+    },
+    "packageName": {
+        "WorldOfAirports": "com.paradyme.woa"
+    },
+    "connection": [
+        {
+            "configName": "General",
+            "devices": "[Adb] devices",
+            "addressRegex": "(.+)\tdevice",
+            "connect": "[Adb] connect [AdbSerial]",
+            "uuid": "[Adb] -s [AdbSerial] shell settings get secure android_id",
+            "version": "[Adb] -s [AdbSerial] shell getprop ro.build.version.release",
+            "display": "[Adb] -s [AdbSerial] shell \"wm size | tail -n 1 | grep -o -E [0-9]+\"",
+            "displayFormat": "%d%d",
+            "ncAddress": "[Adb] -s [AdbSerial] shell \" cat /proc/net/arp | grep : \"",
+            "abilist": "[Adb] -s [AdbSerial] shell getprop ro.product.cpu.abilist",
+            "orientation": "[Adb] -s [AdbSerial] shell \"dumpsys input | grep SurfaceOrientation | grep -m 1 -o -E [0-9]\"",
+            "pushMinitouch": "[Adb] -s [AdbSerial] push \"[minitouchLocalPath]\" \"/data/local/tmp/[minitouchWorkingFile]\"",
+            "chmodMinitouch": "[Adb] -s [AdbSerial] shell chmod 700 \"/data/local/tmp/[minitouchWorkingFile]\"",
+            "callMinitouch": "[Adb] -s [AdbSerial] shell \"/data/local/tmp/[minitouchWorkingFile]\" -i",
+            "callMaatouch": "[Adb] -s [AdbSerial] shell \"export CLASSPATH=/data/local/tmp/[minitouchWorkingFile]; app_process /data/local/tmp com.shxyke.MaaTouch.App\"",
+            "screencapRawByNC": "[Adb] -s [AdbSerial] exec-out \"screencap | nc -w 3 [NcAddress] [NcPort]\"",
+            "screencapRawWithGzip": "[Adb] -s [AdbSerial] exec-out \"screencap | gzip -1\"",
+            "screencapEncode": "[Adb] -s [AdbSerial] exec-out screencap -p",
+            "click": "[Adb] -s [AdbSerial] shell input tap [x] [y]",
+            "swipe": "[Adb] -s [AdbSerial] shell input swipe [x1] [y1] [x2] [y2] [duration]",
+            "input": "[Adb] -s [AdbSerial] shell input text [text]",
+            "start": "[Adb] -s [AdbSerial] shell am start -n com.paradyme.woa/.MainActivity",
+            "stop": "[Adb] -s [AdbSerial] shell am force-stop com.paradyme.woa",
+            "back_to_home": "[Adb] -s [AdbSerial] shell input keyevent HOME",
+            "release": "[Adb] kill-server",
+            "pressEsc": "[Adb] -s [AdbSerial] shell input keyevent 111"
+        }
+    ],
+    "woa": {
+        "airports": ["BRI", "PRG", "BKK", "MSY", "IAD"],
+        "crewRequirements": {
+            "A225": 21, "A124": 21, "A388": 14,
+            "B748": 14, "B744": 14, "B748F": 14, "B744F": 14,
+            "B77W": 11, "B77L": 11, "B77LF": 11,
+            "B789": 9, "B78X": 9, "B788": 9,
+            "A359": 11, "A35K": 11, "A346": 11, "A343": 9,
+            "A332": 9, "A332F": 11, "A333": 9,
+            "A321": 7, "A21N": 7, "A21NX": 7, "A21NY": 7,
+            "A320": 7, "A20N": 7, "A319": 7, "A19N": 7, "A318": 7,
+            "A306": 8,
+            "B763F": 11, "B738": 7, "B38M": 7, "B734": 7,
+            "E190": 6, "E195": 6, "E170": 4, "E175": 4, "E295": 6, "E290": 6,
+            "A3ST": 20, "C17": 15,
+            "B738F": 7, "A321F": 7, "B734F": 7,
+            "BCS3": 7, "BCS1": 7,
+            "CRJX": 4, "CRJ9": 4, "CRJ7": 4, "CRJ2": 4,
+            "F100": 5, "F70": 5
+        },
+        "ocrFixes": {
+            "B7W": "B77W", "A3BB": "A388", "A38B": "A388", "A337": "A332",
+            "B783": "B789", "AIN": "A21N", "AINX": "A21NX", "A2ON": "A20N",
+            "ANY": "A21NY", "AN": "A21N", "ANX": "A21NX",
+            "B7IW": "B77W", "EI5": "E175", "EI0": "E170", "EIO": "E170",
+            "CRI9": "CRJ9", "CRI7": "CRJ7", "CRI2": "CRJ2", "CRIX": "CRJX",
+            "FIQO": "F100", "FI0": "F100", "B739": "B789"
+        },
+        "crewAssignment": {
+            "Doc": "地勤分配滑动条操作参数（对应 perform_sequence_from_auto_sh）",
+            "swipe": {
+                "x1": 793, "y1": 919,
+                "x2": 1222, "y2": 919,
+                "duration": 500
+            },
+            "confirmButton1": {"x": 1289, "y": 1040},
+            "confirmButton2": {"x": 394, "y": 1303},
+            "ocrRegions": {
+                "availableCrew": {"x1": 1085, "y1": 826, "x2": 1338, "y2": 885},
+                "aircraftModel": {"x1": 224, "y1": 444, "x2": 321, "y2": 489}
+            }
+        }
+    }
+}

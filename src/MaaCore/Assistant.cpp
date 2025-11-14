@@ -26,6 +26,7 @@
 #include "Task/Interface/SingleStepTask.h"
 #include "Task/Interface/StartUpTask.h"
 #include "Task/Interface/VideoRecognitionTask.h"
+#include "Task/Interface/WOAAirportTask.h"
 #include "Utils/Logger.hpp"
 #ifdef ASST_DEBUG
 #include "Task/Interface/DebugTask.h"
@@ -238,6 +239,7 @@ asst::Assistant::TaskId asst::Assistant::append_task(const std::string& type, co
     ASST_ASSISTANT_APPEND_TASK_FROM_STRING_IF_BRANCH(OperBoxTask)
     ASST_ASSISTANT_APPEND_TASK_FROM_STRING_IF_BRANCH(ReclamationTask)
     ASST_ASSISTANT_APPEND_TASK_FROM_STRING_IF_BRANCH(CustomTask)
+    ASST_ASSISTANT_APPEND_TASK_FROM_STRING_IF_BRANCH(WOAAirportTask)
 #ifdef ASST_DEBUG
     ASST_ASSISTANT_APPEND_TASK_FROM_STRING_IF_BRANCH(DebugTask)
 #endif
