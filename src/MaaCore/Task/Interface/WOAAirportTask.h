@@ -17,10 +17,11 @@ namespace asst
     public:
         inline static constexpr std::string_view TaskType = "WOAAirport";
 
-        using InterfaceTask::InterfaceTask;
+        WOAAirportTask(const AsstCallback& callback, Assistant* inst);
         virtual ~WOAAirportTask() override = default;
 
         virtual bool _run() override;
+        virtual bool set_params(const json::value& params) override;
 
         // 设置选中的机场
         void set_selected_airport(const std::string& airport);

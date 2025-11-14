@@ -2342,6 +2342,9 @@ namespace MaaWpfGui.Main
             /// <summary>小游戏</summary>
             MiniGame,
 
+            /// <summary>World of Airports 自动化</summary>
+            WOAAirport,
+
             /// <summary>自定义任务s</summary>
             Custom,
         }

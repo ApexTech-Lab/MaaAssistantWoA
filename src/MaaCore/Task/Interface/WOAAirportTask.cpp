@@ -42,6 +42,25 @@ namespace asst
         {"FIQO", "F100"}, {"FI0", "F100"}, {"B739", "B789"}
     };
 
+    WOAAirportTask::WOAAirportTask(const AsstCallback& callback, Assistant* inst)
+        : InterfaceTask(callback, inst, TaskType)
+    {
+        LogTraceFunction;
+    }
+
+    bool WOAAirportTask::set_params(const json::value& params)
+    {
+        LogTraceFunction;
+
+        auto airport_opt = params.find<std::string>("airport");
+        if (airport_opt) {
+            m_selected_airport = *airport_opt;
+            Log.info("Selected airport:", m_selected_airport);
+        }
+
+        return true;
+    }
+
     bool WOAAirportTask::_run()
     {
         LogTraceFunction;

@@ -217,7 +217,7 @@ namespace MaaWpfGui.ViewModels.UI
         /// <returns>Task</returns>
         public async Task Stop()
         {
-            _runningState.SetStopping();
+            _runningState.SetStopping(true);
             StatusInfo = "正在停止...";
 
             await Task.Run(() => Instances.AsstProxy.AsstStop());
