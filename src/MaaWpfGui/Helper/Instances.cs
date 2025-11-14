@@ -62,6 +62,8 @@ namespace MaaWpfGui.Helper
 
         public static CopilotViewModel CopilotViewModel { get; private set; }
 
+        public static WOAAirportViewModel WOAAirportViewModel { get; private set; }
+
         public static VersionUpdateViewModel VersionUpdateViewModel { get; private set; }
 
         public static AnnouncementViewModel AnnouncementViewModel { get; private set; }
@@ -101,6 +103,7 @@ namespace MaaWpfGui.Helper
             ToolboxViewModel = container.Get<ToolboxViewModel>();
             SettingsViewModel = container.Get<SettingsViewModel>();
             CopilotViewModel = container.Get<CopilotViewModel>();
+            WOAAirportViewModel = container.Get<WOAAirportViewModel>();
 
             RemoteControlService = container.Get<RemoteControlService>();
 

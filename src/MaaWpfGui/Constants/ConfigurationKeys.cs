@@ -335,5 +335,10 @@ namespace MaaWpfGui.Constants
         // public const string AnnouncementInfo = "Announcement.AnnouncementInfo";// 已迁移
         // public const string DoNotRemindThisAnnouncementAgain = "Announcement.DoNotRemindThisAnnouncementAgain";// 已迁移
         // public const string DoNotShowAnnouncement = "Announcement.DoNotShowAnnouncement";// 已迁移
+
+        // WOA (World of Airports) Configuration Keys
+        public const string WOASelectedAirport = "WOA.SelectedAirport";
+        public const string WOAEnableCrewAssignment = "WOA.EnableCrewAssignment";
+        public const string WOAEnableSpecialOperations = "WOA.EnableSpecialOperations";
     }
 }
