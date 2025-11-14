@@ -21,6 +21,7 @@ using MaaWpfGui.Main;
 using MaaWpfGui.Models;
 using MaaWpfGui.Models.AsstTasks;
 using MaaWpfGui.States;
+using MaaWpfGui.Utilities.ValueType;
 using Serilog;
 using Stylet;
 
